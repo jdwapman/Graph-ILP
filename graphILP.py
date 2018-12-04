@@ -5,7 +5,7 @@ import sys
 
 # Check that the program has been called appropriately
 if len(sys.argv) != 2:
-	print "Usage: gurobi graph.py filename.txt"
+	print "Usage: gurobi graphILP.py filename.txt"
 	exit()
 
 """ ========== READ GRAPH FROM FILE ========== """
