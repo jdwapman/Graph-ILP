@@ -4,5 +4,5 @@ Finds the largest independent set in a graph using integer linear programming (I
 Usage: gurobi graphILP.py filename.txt
 
 File format:
-<Number of vertices>
-<List of edges>
+Number of vertices
+List of edges
