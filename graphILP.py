@@ -1,5 +1,6 @@
 import gurobipy as grb
 import sys
+import time
 
 """ ========== SETUP ========== """
 
@@ -9,6 +10,8 @@ if len(sys.argv) != 2:
 	exit()
 
 """ ========== READ GRAPH FROM FILE ========== """
+
+tProgStart = time.time()
 
 # Open the file
 graphFile = open(sys.argv[1], "r")
@@ -32,12 +35,15 @@ for line in graphFile:
 
 """ ========== GUROBI ILP ========== """
 
+# Create gurobi model
 m = grb.Model()
 
-# Add variables
-x = {}
+# Limit run time
+days = 1
+m.setParam('TimeLimit', 86400)
 
-# Create binary variables
+# Create binary variables and add to the gurobi model
+x = {}
 for i in range(1, n+1):
 	x[i] = m.addVar(vtype=grb.GRB.BINARY, name="x%d" % i)
 
@@ -51,9 +57,18 @@ for source, dests in graph.iteritems():
 
 # Create objective function. Note: Start from 1 to match file convention.
 # Ignore entry at 0
-c = [1] * (n+1)
-m.setObjective(grb.quicksum(-c[i]*x[i] for i in range(1, n+1)))
+m.setObjective(grb.quicksum(x[i] for i in range(1, n+1)), grb.GRB.MAXIMIZE)
 
+# Perform the integer linear programming optimization
+tOptStart = time.time()
 m.optimize()
+tOptEnd = time.time()
 
+# Print the ILP result. Note: the cost function is the negative of
+# the number of independent vertices
 print x
+
+tProgEnd = time.time()
+
+print "Total program runtime: ", tProgEnd - tProgStart, " sec"
+print "Optimization runtime: ", tOptEnd - tOptStart, " sec"
